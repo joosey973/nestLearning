@@ -1,45 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { UsersRepository } from './users.respository';
 
 @Injectable()
 export class UsersService {
-    private users = new Map<number, string>();
-    private count = 1;
+    constructor(private readonly usersRepsitory: UsersRepository){};
 
     getAllUsers(): string[] {
-        const names: string[] = [];
-        for (let i = 0; i < this.count; i++) {
-            const name = this.users.get(i);
-            if (name !== undefined) {
-                names.push(name);
-            }
-        }
-        return names;
+        return this.usersRepsitory.getAllUsers();
     }
 
     getUserById(userId: number): string {
-        const user = this.users.get(userId);
-        return `Это пользователь ${user}, найденный по id = ${userId}`;
+        return this.usersRepsitory.getUserById(userId)
     }
 
     getUserByName(name: string): string {
-        let resString: string = '';
-        for (const [id, userName] of this.users) {
-            if (userName === name) {
-                resString += `Найден пользователь ${name} c id = ${id}\n`;
-            }
-        }
-
-        if (!resString) {
-            return "Не найдено пользователей с таким именем!";
-        }
-
-        return resString;
+        return this.usersRepsitory.getUserByName(name);
     }
 
-    createUser(name: string) {
-        this.users.set(this.count++, name);
-        return {message: `Пользователь ${name} успешно создан!`, name: name, id: this.count - 1}
+    createUser(name: string) { 
+        return this.usersRepsitory.createUser(name);
     }
-
-
 }
