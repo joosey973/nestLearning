@@ -17,7 +17,15 @@ export class UsersService {
         return this.usersRepsitory.getUserByName(name);
     }
 
-    createUser(name: string) { 
-        return this.usersRepsitory.createUser(name);
+    createUser(body: any) { 
+        return this.usersRepsitory.createUser(body);
+    }
+
+    updateUser(userId: number, body: any) {
+        return this.usersRepsitory.updateUser(userId, body);
+    }
+
+    deleteUser(userId: number) {
+        return this.usersRepsitory.deleteUser(userId);
     }
 }
