@@ -1,63 +1,55 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Pool } from "pg";
+import type { UserType, UserRetType, UserCType, UserUType } from './users.types';
+
 
 @Injectable()
 export class UsersRepository {
-    private users = new Map<number, {name: string, password: string}>();
-    private count = 1;
+    constructor(readonly pool: Pool){};
 
-    getAllUsers(): string[] {
-        const names: string[] = [];
-        for (let i = 0; i < this.count; i++) {
-            const name = this.users.get(i)?.name;
-            if (name !== undefined) {
-                names.push(name);
-            }
-        }
-        return names;
+    async getAllUsers(): Promise<string[]> {
+        const res = await this.pool.query<UserType>("select * from users");
+        const allUsers = res.rows.map(user => user.name);
+        return allUsers;
     }
 
-    getUserById(userId: number): string {
-        const user = this.users.get(userId)?.name;
+    async getUserById(userId: number): Promise<string> {
+        const res = await this.pool.query<UserType>(`select id, name from users where id=${userId}`)
+        const user = res.rows[0].name;
+        
         if (user === undefined) throw new NotFoundException('Пользователь не найден');
         return `Это пользователь ${user}, найденный по id = ${userId}`;
     }
 
-    getUserByName(name: string): string {
-        let resString: string = '';
-        for (const [id, userName] of this.users) {
-            if (userName.name === name) {
-                resString += `Найден пользователь ${name} c id = ${id}\n`;
-            }
-        }
-
-        if (!resString) {
-            throw new NotFoundException("Не найдены пользователи с таким именем!");
-        }
-
-        return resString;
+    async getUserByName(name: string): Promise<string> {
+        const res = await this.pool.query<UserType>(`select id, name from users where name='${name}'`)
+        const users = res.rows.map(user => `Найден пользователь ${name} c id = ${user.id}`);
+        const usersString = users.join("\n");
+        if (!usersString) throw new NotFoundException("Не найдены пользователи с таким именем!");
+        return usersString;
     }
 
-    createUser(body: any) {
-        let name = body.name;
-        let password = body.password;
+    async createUser(body: UserCType): Promise<UserRetType> {
+        const name = body.name;
+        const password = body.password;
         if (!password) throw new BadRequestException("Не указан пароль");
-        if (!name) throw new BadRequestException("Не указано имя")
+        if (!name) throw new BadRequestException("Не указано имя");
         if (/\d/.test(name)) throw new BadRequestException("Неверно указано имя! (Не должно содержаться цифр)");
-        this.users.set(this.count++, {"name": name, "password": password});
+
+        await this.pool.query<UserType>(`insert into users (name, password) values ('${name}', '${password}')`)
         return {message: `Пользователь ${name} успешно создан!`}
     }
 
-    updateUser(userId: number, body: any) {
+    async updateUser(userId: number, body: UserUType): Promise<UserRetType> {
         if (!body.name) throw new BadRequestException("Не указано поле для изменения!");
-        let user = this.users.get(userId);
-        if (!user) throw new NotFoundException("Пользователь не найден!");
-        user.name = body.name;
+        const res = await this.pool.query<UserType>(`update users set name='${body.name}' where id=${userId}`)
+        if (res.rowCount === 0) throw new NotFoundException("Пользователь не найден!");
         return {message: `Пользователь с id = ${userId} успешно обновлен!`}
     }
 
-    deleteUser(userId: number) {
-        if (!userId) throw new NotFoundException("Пользователь не найден!");
-        this.users.delete(userId);
+    async deleteUser(userId: number): Promise<UserRetType> {
+        const res = await this.pool.query<UserType>(`delete from users where id=${userId}`)
+        if (res.rowCount === 0) throw new NotFoundException("Пользователь не найден!")
         return {message: `Пользователь с id = ${userId} успешно удален!`}
     }
 }

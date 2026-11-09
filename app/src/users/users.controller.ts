@@ -1,38 +1,39 @@
 import { Controller, Get, Post, Patch, Delete, Param, ParseIntPipe, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
+import type { UserRetType, UserCType, UserUType } from './users.types';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService){};
 
     @Get()
-    getAllUsers(): string[] {
+    getAllUsers(): Promise<string[]> {
         return this.usersService.getAllUsers();
     }
 
     @Get(':id')
-    getUserById(@Param('id', ParseIntPipe) userId: number): string {
+    getUserById(@Param('id', ParseIntPipe) userId: number): Promise<string> {
         return this.usersService.getUserById(userId);
     }
 
     @Get('by-name/:name')
-    getUserByName(@Param('name') name: string): string {
+    getUserByName(@Param('name') name: string): Promise<string> {
         return this.usersService.getUserByName(name);
     }
 
 
     @Post()
-    createUser(@Body() body: any) {
+    createUser(@Body() body: UserCType): Promise<UserRetType> {
         return this.usersService.createUser(body);
     }
 
     @Patch(':id')
-    updateUser(@Body() body: any, @Param("id", ParseIntPipe) userId: number) {
+    updateUser(@Body() body: UserUType, @Param("id", ParseIntPipe) userId: number): Promise<UserRetType> {
         return this.usersService.updateUser(userId, body);
     }
 
     @Delete(":id")
-    deleteUser(@Param("id", ParseIntPipe) userId: number) {
+    deleteUser(@Param("id", ParseIntPipe) userId: number): Promise<UserRetType> {
         return this.usersService.deleteUser(userId);
     }
 }
