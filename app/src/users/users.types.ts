@@ -1,6 +1,7 @@
 export type UserType = {
     id: number;
     name: string;
+    lastactivitywithuser: Date;
 }
 
 export type UserRetType = {
