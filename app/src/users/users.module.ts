@@ -1,25 +1,14 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { UsersRepository } from './users.respository';
 import { UsersService } from './users.service';
-import { Pool } from "pg";
 import { UsersMiddleware, LoggerMiddleware } from './users.middleware';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './entities/users.entity';
 
 @Module({
+    imports: [TypeOrmModule.forFeature([User])],
     controllers: [UsersController],
-    providers: [UsersRepository, UsersService,
-        {
-            provide: Pool,
-            useFactory: () => {
-                return new Pool({
-                    host: "localhost",
-                    user: "myuser",
-                    password: "mypassword",
-                    database: "app",
-                })
-            }
-        },
-    ],
+    providers: [UsersService],
 })
 export class UsersModule {
     configure(consumer: MiddlewareConsumer) {

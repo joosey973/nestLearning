@@ -1,37 +1,46 @@
-import { Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
-import { Pool } from 'pg';
-import type { UserType } from './users.types';
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Request, Response, NextFunction } from 'express';
+import { User } from './entities/users.entity';
 
 @Injectable()
 export class UsersMiddleware implements NestMiddleware {
-  constructor(readonly pool: Pool){};
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) { }
 
-  async use(req: any, res: any, next: () => void) {
-    let partOfQueryRequest = "";
-    if (req.params.id) {
-      partOfQueryRequest = ` where id=${req.params.id}`;
-    } else if (req.params.name) {
-      partOfQueryRequest = ` where name='${req.params.name}'`;
-    } else {
-      partOfQueryRequest = "";
+  async use(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const where: { id?: number; name?: string } = {};
+
+    const rawId = req.params.id;
+    const rawName = req.params.name;
+
+    if (rawId) {
+      where.id = Number(Array.isArray(rawId) ? rawId[0] : rawId);
+    } else if (rawName) {
+      where.name = Array.isArray(rawName) ? rawName[0] : rawName;
     }
-    const result = await this.pool.query<UserType>(`select id, name, lastActivityWithUser from users${partOfQueryRequest}`);
-    const users = result.rows.map((usr) => ({id: usr.id, userName: usr.name, lastActivity: usr.lastactivitywithuser}));
+
+    const users = await this.userRepository.find({ where });
+
     if (users.length !== 0) {
-      for (let k = 0; k < users.length; k++) {
-        await this.pool.query<UserType>(`update users set lastActivityWithUser=NOW() where id=${users[k].id}`)
+      for (const user of users) {
+        user.lastActivityWithUser = new Date();
+        await this.userRepository.save(user);
       }
     }
+
     next();
   }
 }
 
-
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-
-  async use(req: any, res: any, next: () => void) {
-    console.log(`[${req.method}] / endpoint: '${req.originalUrl}' / IP: ${req.ip}`)
+  use(req: Request, res: Response, next: NextFunction): void {
+    console.log(
+      `[${req.method}] / endpoint: '${req.originalUrl}' / IP: ${req.ip}`,
+    );
     next();
   }
 }

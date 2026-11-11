@@ -3,9 +3,11 @@ import { createObserveModule } from '@nestjs/observe';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlockUserController } from './block-user/block-user.controller';
-import { BlockUserService } from './block-user/block-user.service';
 import { BlockUserModule } from './block-user/block-user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { DataModule } from './data/data.module';
+
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -20,6 +22,18 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     UsersModule,
     BlockUserModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'myuser',
+      password: 'mypassword',
+      database: 'app',
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    AuthModule,
+    DataModule,
   ],
 })
 export class AppModule {}

@@ -1,32 +1,59 @@
-import { Injectable } from '@nestjs/common';
-import { UsersRepository } from './users.respository';
-import type { UserRetType, UserCType, UserUType } from './users.types';
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import type { UserType, UserRetType, UserCType, UserUType } from './users.types';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "./entities/users.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
-    constructor(private readonly usersRepsitory: UsersRepository){};
+    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
 
-    getAllUsers(): Promise<string[]> {
-        return this.usersRepsitory.getAllUsers();
+    async getAllUsers(): Promise<User[]> {
+        return await this.userRepository.find();
     }
 
-    getUserById(userId: number): Promise<string> {
-        return this.usersRepsitory.getUserById(userId)
+    async getUserById(userId: number): Promise<User | null> {
+        const user = await this.userRepository.findOneBy({ id: userId });
+        if (user === null) throw new NotFoundException('Пользователь не найден');
+        return user;
     }
 
-    getUserByName(name: string): Promise<string> {
-        return this.usersRepsitory.getUserByName(name);
+    async getUserByName(name: string): Promise<User[]> {
+        const users = await this.userRepository.find({ where: { name } });
+        if (users.length === 0) throw new NotFoundException("Не найдены пользователи с таким именем!");
+        return users;
     }
 
-    createUser(body: UserCType): Promise<UserRetType> { 
-        return this.usersRepsitory.createUser(body);
+    async createUser(createUserDto: CreateUserDto): Promise<UserRetType> {
+        const email = createUserDto.email;
+        const name = createUserDto.name;
+        const password = createUserDto.password;
+        if (!email) throw new BadRequestException("Не указана почта");
+        if (!name) throw new BadRequestException("Не указано имя");
+        if (!password) throw new BadRequestException("Не указан пароль");
+        if (/\d/.test(name)) throw new BadRequestException("Неверно указано имя! (Не должно содержаться цифр)");
+
+        const newUser = this.userRepository.create({ email, name, password });
+        await this.userRepository.save(newUser);
+
+        return { message: `Пользователь ${name} успешно создан!` };
     }
 
-    updateUser(userId: number, body: UserUType): Promise<UserRetType> {
-        return this.usersRepsitory.updateUser(userId, body);
+    async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<UserRetType> {
+        if (/\d/.test(updateUserDto.name)) throw new BadRequestException("Неверно указано имя! (Не должно содержаться цифр)");
+        const res = await this.userRepository.update(userId, updateUserDto);
+        if (res.affected === 0) {
+            throw new NotFoundException('Пользователь не найден!');
+        }
+        return { message: `Пользователь с id = ${userId} успешно обновлен!` };
     }
 
-    deleteUser(userId: number): Promise<UserRetType> {
-        return this.usersRepsitory.deleteUser(userId);
+    async deleteUser(userId: number): Promise<UserRetType> {
+        const res = await this.userRepository.delete({ id: userId });
+        if (!res.affected) throw new NotFoundException("Пользователь не найден!");
+
+        return { message: `Пользователь с id = ${userId} успешно удален!` };
     }
 }
