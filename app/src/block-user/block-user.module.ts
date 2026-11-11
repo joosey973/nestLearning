@@ -1,25 +1,14 @@
 import { Module } from '@nestjs/common';
 import { BlockUserController } from './block-user.controller';
-import { BlockUserRepository } from './block-user.repository';
 import { BlockUserService } from './block-user.service';
-import { Pool } from 'pg';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../users/entities/users.entity';
 
 @Module({
-     controllers: [BlockUserController],
-        providers: [BlockUserRepository, BlockUserService,
-            {
-                provide: Pool,
-                useFactory: () => {
-                    return new Pool({
-                        host: "localhost",
-                        user: "myuser",
-                        password: "mypassword",
-                        database: "app",
-                    })
-                }
-            },
-        ],
+    imports: [TypeOrmModule.forFeature([User])],
+    controllers: [BlockUserController],
+    providers: [BlockUserService],
 })
 export class BlockUserModule {
-    
+
 }

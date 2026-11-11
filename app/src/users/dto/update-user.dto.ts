@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsEmail } from 'class-validator';
 
 export class UpdateUserDto {
     @IsEmail({}, {message: "Некорректно указана почта"})

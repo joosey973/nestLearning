@@ -9,6 +9,6 @@ export class BlockUserController {
 
     @Patch(':id')
     blockUser(@Param('id', ParseIntPipe) userId: number): Promise<UserRetType> {
-        return this.blockUserService.deleteUser(userId);
+        return this.blockUserService.blockUser(userId);
     }
 }

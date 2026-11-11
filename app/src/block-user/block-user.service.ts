@@ -1,12 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { BlockUserRepository } from './block-user.repository';
-import { UserRetType } from '../users/users.types';
+import { Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
+import type { UserType, UserRetType } from '../users/users.types';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "../users/entities/users.entity";
+
 
 @Injectable()
 export class BlockUserService {
-    constructor(readonly blockUserRepository: BlockUserRepository){};
+    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>){};
 
-    deleteUser(userId: number): Promise<UserRetType> {
-            return this.blockUserRepository.blockUser(userId);
+    async blockUser(userId: number): Promise<UserRetType> {
+        const res = await this.userRepository.findOneBy({id: userId});
+        if (res === null) throw new NotFoundException("Пользователь не найден!");
+        if (res.blocked) throw new UnprocessableEntityException("Пользователь уже заблокирован!");
+        await this.userRepository.update(userId, {blocked: true});
+        
+        return {message: `Пользователь с id = ${userId} успешно заблокирован!`}
     }
 }

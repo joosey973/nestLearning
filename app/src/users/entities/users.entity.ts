@@ -16,4 +16,7 @@ export class User {
 
   @UpdateDateColumn()
   lastActivityWithUser: Date;
+  
+  @Column({type: "boolean", default: false})
+  blocked: boolean;
 }
