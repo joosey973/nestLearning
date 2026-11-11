@@ -3,12 +3,15 @@ import { createObserveModule } from '@nestjs/observe';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { BlockUserController } from './block-user/block-user.controller';
+import { BlockUserService } from './block-user/block-user.service';
+import { BlockUserModule } from './block-user/block-user.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, BlockUserController],
+  providers: [AppService, BlockUserService],
   imports: [
     ObserveModule.forRoot({
       appKey: process.env.OBSERVE_APP_KEY ?? 'YOUR_APP_KEY',
@@ -16,6 +19,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'app',
     }),
     UsersModule,
+    BlockUserModule,
   ],
 })
 export class AppModule {}
