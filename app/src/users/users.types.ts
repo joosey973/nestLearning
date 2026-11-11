@@ -2,6 +2,7 @@ export type UserType = {
     id: number;
     name: string;
     lastactivitywithuser: Date;
+    blocked: boolean;
 }
 
 export type UserRetType = {

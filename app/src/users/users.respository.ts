@@ -46,4 +46,10 @@ export class UsersRepository {
         if (res.rowCount === 0) throw new NotFoundException("Пользователь не найден!");
         return {message: `Пользователь с id = ${userId} успешно обновлен!`}
     }
+
+    async deleteUser(userId: number): Promise<UserRetType> {
+        const res = await this.pool.query<UserType>(`delete from users where id=${userId}`)
+        if (res.rowCount === 0) throw new NotFoundException("Пользователь не найден!")
+        return {message: `Пользователь с id = ${userId} успешно удален!`}
+    }
 }

@@ -10,8 +10,8 @@ import { BlockUserModule } from './block-user/block-user.module';
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
-  controllers: [AppController, BlockUserController],
-  providers: [AppService, BlockUserService],
+  controllers: [AppController],
+  providers: [AppService],
   imports: [
     ObserveModule.forRoot({
       appKey: process.env.OBSERVE_APP_KEY ?? 'YOUR_APP_KEY',

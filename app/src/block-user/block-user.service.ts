@@ -7,6 +7,6 @@ export class BlockUserService {
     constructor(readonly blockUserRepository: BlockUserRepository){};
 
     deleteUser(userId: number): Promise<UserRetType> {
-            return this.blockUserRepository.deleteUser(userId);
+            return this.blockUserRepository.blockUser(userId);
     }
 }
