@@ -38,4 +38,9 @@ export class UsersHttpController {
     async delete(@Param("id", ParseIntPipe) userId: number): Promise<boolean> {
         return await this.usersHttpService.delete(userId);
     }
+
+    @Patch('block-user/:id')
+    async blockUser(@Param('id', ParseIntPipe) userId: number): Promise<boolean> {
+        return await this.usersHttpService.block(userId);
+    }
 }

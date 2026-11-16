@@ -10,36 +10,36 @@ export class DatumLogicService {
         @Inject(AuthDataService) private readonly authDataService: AuthDataService
     ) { };
 
-    async getUserIdOrError(headers: Record<string, string>): Promise<number> {
-        const access = await this.authDataService.getById(headers['x-user-access-key']);
+    async getUserIdOrError(accessKey: string): Promise<number> {
+        const access = await this.authDataService.getById(accessKey);
         if (access === null) throw new BadRequestException("Вы не авторизованы!");
         return access.user_id;
     }
 
-    async getDataOrError(headers: Record<string, string>, id: number): Promise<Datum> {
-        const userId = await this.getUserIdOrError(headers);
+    async getDataOrError(accessKey: string, id: number): Promise<Datum> {
+        const userId = await this.getUserIdOrError(accessKey);
         const dataObj = await this.datumDataService.findOne(id);
         if (dataObj === null) throw new NotFoundException("Нет данных под этим id");
         if (userId !== dataObj.user_id) throw new BadRequestException("Вы не имеете доступа к этим данным!");
         return dataObj
     }
 
-    async findAll(headers: Record<string, string>): Promise<Datum[]> {
-        const userId = await this.getUserIdOrError(headers);
+    async findAll(accessKey: string): Promise<Datum[]> {
+        const userId = await this.getUserIdOrError(accessKey);
         return await this.datumDataService.findAll(userId);
     }
 
-    async findOne(headers: Record<string, string>, id: number): Promise<Datum | null> {
-        return await this.getDataOrError(headers, id);
+    async findOne(accessKey: string, id: number): Promise<Datum | null> {
+        return await this.getDataOrError(accessKey, id);
     }
 
-    async create(headers: Record<string, string>, data: Partial<Datum>): Promise<Datum> {
-        const userId = await this.getUserIdOrError(headers);
+    async create(accessKey: string, data: Partial<Datum>): Promise<Datum> {
+        const userId = await this.getUserIdOrError(accessKey);
         return await this.datumDataService.create(userId, data);
     }
 
-    async update(headers: Record<string, string>, id: number, data: Partial<Pick<Datum, 'data'>>,): Promise<Datum> {
-        const dataObj = await this.getDataOrError(headers, id)
+    async update(accessKey: string, id: number, data: Partial<Pick<Datum, 'data'>>,): Promise<Datum> {
+        const dataObj = await this.getDataOrError(accessKey, id)
         if (data.data !== undefined && typeof data.data !== 'function') {
             dataObj.data = data.data;
         }
@@ -47,8 +47,8 @@ export class DatumLogicService {
         return await this.datumDataService.update(dataObj);
     }
 
-    async delete(headers: Record<string, string>, id: number): Promise<boolean> {
-        await this.getDataOrError(headers, id);
+    async delete(accessKey: string, id: number): Promise<boolean> {
+        await this.getDataOrError(accessKey, id);
         return await this.datumDataService.delete(id);
     }
 }

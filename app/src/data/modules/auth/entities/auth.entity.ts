@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity('access')
+@Entity('auth')
 export class Auth {
     @PrimaryColumn({type: 'int', unique: true})
     user_id: number;

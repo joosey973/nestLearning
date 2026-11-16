@@ -8,23 +8,23 @@ import { UpdateDatumDto } from '../dto/update-datum.dto';
 export class DatumHttpService {
     constructor(@Inject(DatumLogicService) private readonly datumLogicService: DatumLogicService) { };
 
-    async findAll(headers: Record<string, string>): Promise<Datum[]> {
-        return await this.datumLogicService.findAll(headers);
+    async findAll(accessKey: string): Promise<Datum[]> {
+        return await this.datumLogicService.findAll(accessKey);
     }
 
-    async findOne(headers: Record<string, string>, id: number): Promise<Datum | null> {
-        return await this.datumLogicService.findOne(headers, id);
+    async findOne(accessKey: string, id: number): Promise<Datum | null> {
+        return await this.datumLogicService.findOne(accessKey, id);
     }
 
-    async create(headers: Record<string, string>, dto: CreateDatumDto): Promise<Datum> {
-        return await this.datumLogicService.create(headers, dto.data);
+    async create(accessKey: string, dto: CreateDatumDto): Promise<Datum> {
+        return await this.datumLogicService.create(accessKey, dto.data);
     }
 
-    async update(headers: Record<string, string>, id: number, dto: UpdateDatumDto): Promise<Datum> {
-        return await this.datumLogicService.update(headers, id, dto);
+    async update(accessKey: string, id: number, dto: UpdateDatumDto): Promise<Datum> {
+        return await this.datumLogicService.update(accessKey, id, dto);
     }
 
-    async delete(headers: Record<string, string>, id: number): Promise<boolean> {
-        return await this.datumLogicService.delete(headers, id);
+    async delete(accessKey: string, id: number): Promise<boolean> {
+        return await this.datumLogicService.delete(accessKey, id);
     }
 }

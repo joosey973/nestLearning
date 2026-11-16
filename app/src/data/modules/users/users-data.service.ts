@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/users.entity";
-import { FindOptionsWhere, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class UsersDataService {
@@ -38,9 +38,8 @@ export class UsersDataService {
         return (result.affected ?? 0) > 0;
     }
 
-    async updateLastActivity(where: FindOptionsWhere<User>): Promise<void> {
-        await this.usersRepository.update(where, {
-            lastActivityWithUser: new Date(),
-        });
+    async block(userId: number): Promise<boolean> {
+        const res = await this.usersRepository.update(userId, {blocked: true});
+        return (res.affected ?? 0) > 0;
     }
 }

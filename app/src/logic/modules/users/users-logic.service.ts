@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
 import { UsersDataService } from "../../../data/modules/users/users-data.service";
 import { User } from "../../../data/modules/users/entities/users.entity";
 
@@ -45,11 +45,10 @@ export class UsersLogicService {
         return affected;
     }
 
-    async updateLastActivity(id?: number, name?: string): Promise<void> {
-        if (id !== undefined) {
-            await this.usersDataService.updateLastActivity({ id });
-        } else if (name !== undefined) {
-            await this.usersDataService.updateLastActivity({ name });
-        }
+    async block(userId: number): Promise<boolean> {
+        const res = await this.usersDataService.getUserById(userId);
+        if (res === null) throw new NotFoundException("Пользователь не найден!");
+        if (res.blocked) throw new UnprocessableEntityException("Пользователь уже заблокирован!");
+        return await this.usersDataService.block(userId);
     }
 }

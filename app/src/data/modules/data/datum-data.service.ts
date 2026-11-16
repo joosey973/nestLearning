@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Datum } from './entities/datum.entity';
 import { Repository } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/browser';
 
 @Injectable()
 export class DatumDataService {

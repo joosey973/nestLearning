@@ -31,4 +31,8 @@ export class UsersHttpService {
     async delete(id: number): Promise<boolean> {
         return await this.usersLogicService.delete(id);
     }
+
+    async block(userId: number): Promise<boolean> {
+        return await this.usersLogicService.block(userId);
+    }
 }

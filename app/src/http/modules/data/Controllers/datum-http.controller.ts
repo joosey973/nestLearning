@@ -10,26 +10,26 @@ export class DatumHttpController {
 
   @Post()
   async create(@Headers() headers: Record<string, string>, @Body() createDatumDto: CreateDatumDto) {
-    return await this.datumHttpService.create(headers, createDatumDto);
+    return await this.datumHttpService.create(headers['x-user-access-key'], createDatumDto);
   }
 
   @Get()
   async findAll(@Headers() headers: Record<string, string>): Promise<Datum[]> {
-    return await this.datumHttpService.findAll(headers);
+    return await this.datumHttpService.findAll(headers['x-user-access-key']);
   }
 
   @Get(':id')
   async findOne(@Headers() headers: Record<string, string>, @Param('id', ParseIntPipe) id: number): Promise<Datum | null> {
-    return await this.datumHttpService.findOne(headers, id);
+    return await this.datumHttpService.findOne(headers['x-user-access-key'], id);
   }
 
   @Patch(':id')
   async update(@Headers() headers: Record<string, string>, @Param('id', ParseIntPipe) id: number, @Body() updateDatumDto: UpdateDatumDto): Promise<Datum> {
-    return await this.datumHttpService.update(headers, id, updateDatumDto);
+    return await this.datumHttpService.update(headers['x-user-access-key'], id, updateDatumDto);
   }
 
   @Delete(':id')
   async delete(@Headers() headers: Record<string, string>, @Param('id', ParseIntPipe) id: number): Promise<boolean> {
-    return await this.datumHttpService.delete(headers, id);
+    return await this.datumHttpService.delete(headers['x-user-access-key'], id);
   }
 }
