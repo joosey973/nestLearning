@@ -6,7 +6,9 @@ COPY package*.json ./
 
 RUN npm ci
 
-COPY . .
+COPY src ./src
+COPY nest-cli.json tsconfig.json tsconfig.build.json ./
+COPY .env ./.env
 
 RUN npm run build
 
