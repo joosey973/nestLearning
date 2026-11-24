@@ -13,9 +13,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @UpdateDateColumn()
-  lastActivityWithUser: Date;
   
   @Column({type: "boolean", default: false})
   blocked: boolean;

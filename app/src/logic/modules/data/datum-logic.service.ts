@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Datum } from '../../../data/modules/data/entities/datum.entity';
+import { Datum } from '../../../data/modules/datum/entities/datum.entity';
 import { AuthDataService } from '../../../data/modules/auth/auth-data.service';
-import { DatumDataService } from '../../../data/modules/data/datum-data.service';
+import { DatumDataService } from '../../../data/modules/datum/datum-data.service';
 
 @Injectable()
 export class DatumLogicService {

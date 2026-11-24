@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, ParseIntPipe, Head } from '@nestjs/common';
 import { DatumHttpService } from '../services/datum-logic.service';
 import { CreateDatumDto } from '../dto/create-datum.dto';
-import { Datum } from '../../../../data/modules/data/entities/datum.entity';
+import { Datum } from '../../../../data/modules/datum/entities/datum.entity';
 import { UpdateDatumDto } from '../dto/update-datum.dto';
 
 @Controller('/api/v1/data')

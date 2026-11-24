@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { Module } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller';
@@ -14,14 +16,14 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
   imports: [
     HttpModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'myuser',
-      password: 'mypassword',
-      database: 'app',
+      type: "postgres",
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
   ],
 })

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DatumLogicService } from '../../../../logic/modules/data/datum-logic.service';
-import { Datum } from '../../../../data/modules/data/entities/datum.entity';
+import { Datum } from '../../../../data/modules/datum/entities/datum.entity';
 import { CreateDatumDto } from '../dto/create-datum.dto';
 import { UpdateDatumDto } from '../dto/update-datum.dto';
 
